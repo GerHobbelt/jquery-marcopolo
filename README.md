@@ -16,7 +16,7 @@ Developed by [Justin Stayton](http://twitter.com/jstayton) while at
 [Monk Development](http://monkdev.com) for the
 [Ekklesia 360](http://ekklesia360.com) CMS.
 
-*   [Examples](http://jstayton.github.com/jquery-marcopolo)
+*   [Examples](http://jstayton.github.io/jquery-marcopolo)
 *   [Release Notes](https://github.com/jstayton/jquery-marcopolo/wiki/Release-Notes)
 
 Features
@@ -66,21 +66,24 @@ Installation
 
 #### Bower
 
-[Bower](http://twitter.github.com/bower) is a package manager for the web. Once
-installed, Bower can install Marco Polo with a single command:
+[Bower](http://bower.io) is a package manager for the web. Once installed, Bower
+can install Marco Polo with a single command:
 
     bower install jquery-marcopolo
 
 #### Manually
 
-Copy the desired files from the `build` directory to your codebase.
+*   [Minified without comments](https://raw.github.com/jstayton/jquery-marcopolo/master/build/jquery.marcopolo.min.js)
+*   [Full source with comments](https://raw.github.com/jstayton/jquery-marcopolo/master/build/jquery.marcopolo.js)
 
 ### Include
 
 Include both jQuery and Marco Polo in your HTML:
 
-    <script src="jquery.min.js"></script>
-    <script src="jquery.marcopolo.min.js"></script>
+```html
+<script src="jquery.min.js"></script>
+<script src="jquery.marcopolo.min.js"></script>
+```
 
 In most cases, `jquery.marcopolo.min.js` is the best file to include, as it
 contains the required libraries and source code in a single minified package.
@@ -99,19 +102,23 @@ Let's say you want to create a user search field that redirects to the user's
 profile when a result is selected. To start, add a text input, if you haven't
 already:
 
-    <input type="text" name="userSearch" id="userSearch">
+```html
+<input type="text" name="userSearch" id="userSearch">
+```
 
 Then attach Marco Polo to the text input in your JavaScript:
 
-    $('#userSearch').marcoPolo({
-      url: '/users/search',
-      formatItem: function (data, $item) {
-        return data.first_name + ' ' + data.last_name;
-      },
-      onSelect: function (data, $item) {
-        window.location = data.profile_url;
-      }
-    });
+```javascript
+$('#userSearch').marcoPolo({
+  url: '/users/search',
+  formatItem: function (data, $item) {
+    return data.first_name + ' ' + data.last_name;
+  },
+  onSelect: function (data, $item) {
+    window.location = data.profile_url;
+  }
+});
+```
 
 When a search happens, a GET request is made to the `url` with `q`
 (the search value) added to the query string. (Additional data can be included
@@ -119,21 +126,23 @@ using the `data` option.) Let's say a search is made for _Butler_. A GET
 request is made to `/users/search?q=Butler`. Your backend code must then use
 the `q` parameter to find and return the matching users in JSON format:
 
-    [
-      {
-        first_name: 'James',
-        last_name: 'Butler',
-        profile_url: '/users/78749',
-        …
-      },
-      {
-        first_name: 'Win',
-        last_name: 'Butler',
-        profile_url: '/users/41480',
-        …
-      },
-      …
-    ]
+```json
+[
+  {
+    "first_name": "James',
+    "last_name": "Butler',
+    "profile_url": "/users/78749',
+    …
+  },
+  {
+    "first_name": "Win",
+    "last_name": "Butler",
+    "profile_url": "/users/41480",
+    …
+  },
+  …
+]
+```
 
 Each JSON user object is passed to the `formatItem` callback option for display
 in the results list. And when a user is selected from the results list, their
@@ -178,7 +187,7 @@ be used).
     _Default:_ false
 
     ----------------------------------------------------------------------------
-*   **data** _object, string_
+*   **data** _object, string, function_
 
     Additional data to be sent in the request query string. (Note: The query
     string parameter that is set with the input value (_param_ option) will
@@ -186,6 +195,17 @@ be used).
     exists.)
 
     _Default:_ {}
+
+    When a function is used, it's called for every request, allowing the data to
+    be dynamic. An _object_ must be returned.
+
+    _Parameters:_
+
+    *   **q** _string_ Requested input value.
+
+    _this:_ _jQuery object_ Text input (no need to wrap like _$(this)_).
+
+    _Return:_ _object_ of additional data.
 
     ----------------------------------------------------------------------------
 *   **delay** _integer_
@@ -316,16 +336,20 @@ be used).
     Format the text that's displayed when the ajax request fails. The message
     is displayed in a list item with the class _mp\_error_:
 
-        <li class="mp_error">
-          <em>Your search could not be completed at this time.</em>
-        </li>
+    ```html
+    <li class="mp_error">
+      <em>Your search could not be completed at this time.</em>
+    </li>
+    ```
 
     Setting this option to _null_ or returning _false_ suppresses the message
     from being displayed.
 
     _Default:_
 
-        return '<em>Your search could not be completed at this time.</em>';
+    ```javascript
+    return '<em>Your search could not be completed at this time.</em>';
+    ```
 
     _Parameters:_
 
@@ -346,11 +370,15 @@ be used).
     _title_ or _name_ value of the data object is displayed. The returned value
     is added to a list item with the class _mp\_item_:
 
-        <li class="mp_item">The Title of Something</li>
+    ```html
+    <li class="mp_item">The Title of Something</li>
+    ```
 
     _Default:_
 
-        return data.title || data.name;
+    ```javascript
+    return data.title || data.name;
+    ```
 
     _Parameters:_
 
@@ -369,9 +397,11 @@ be used).
     (specified with the _minChars_ option) hasn't been reached. The message is
     displayed in a list item with the class _mp\_min\_chars_:
 
-        <li class="mp_min_chars">
-          <em>Your search must be at least <strong>3</strong> characters.</em>
-        </li>
+    ```html
+    <li class="mp_min_chars">
+      <em>Your search must be at least <strong>3</strong> characters.</em>
+    </li>
+    ```
 
     Setting this option to _null_ or returning _false_ suppresses the message
     from being displayed. It is also not displayed when there is no input
@@ -379,7 +409,9 @@ be used).
 
     _Default:_
 
-        return '<em>Your search must be at least <strong>' + minChars + '</strong>characters.</em>';
+    ```javascript
+    return '<em>Your search must be at least <strong>' + minChars + '</strong>characters.</em>';
+    ```
 
     _Parameters:_
 
@@ -398,16 +430,20 @@ be used).
     requested input value. The message is displayed in a list item with the
     class _mp\_no\_results_:
 
-        <li class="mp_no_results">
-          <em>No results for <strong>something</strong>.</em>
-        </li>
+    ```html
+    <li class="mp_no_results">
+      <em>No results for <strong>something</strong>.</em>
+    </li>
+    ```
 
     Setting this option to _null_ or returning _false_ suppresses the message
     from being displayed.
 
     _Default:_
 
-        return '<em>No results for <strong>' + q + '</strong>.</em>';
+    ```javascript
+    return '<em>No results for <strong>' + q + '</strong>.</em>';
+    ```
 
     _Parameters:_
 
@@ -435,7 +471,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopoloblur_ event:
 
-        $(selector).on('marcopoloblur', function (event) { … });
+    ```javascript
+    $(selector).on('marcopoloblur', function (event) { … });
+    ```
 
     ----------------------------------------------------------------------------
 *   **onChange** (q) _function, null_
@@ -452,7 +490,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopolochange_ event:
 
-        $(selector).on('marcopolochange', function (event, q) { … });
+    ```javascript
+    $(selector).on('marcopolochange', function (event, q) { … });
+    ```
 
     ----------------------------------------------------------------------------
 *   **onError** ($item, jqXHR, textStatus, errorThrown)
@@ -473,7 +513,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopoloerror_ event:
 
-        $(selector).on('marcopoloerror', function (event, $item, jqXHR, textStatus, errorThrown) { … });
+    ```javascript
+    $(selector).on('marcopoloerror', function (event, $item, jqXHR, textStatus, errorThrown) { … });
+    ```
 
     ----------------------------------------------------------------------------
 *   **onFocus** () _function, null_
@@ -491,7 +533,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopolofocus_ event:
 
-        $(selector).on('marcopolofocus', function (event) { … });
+    ```javascript
+    $(selector).on('marcopolofocus', function (event) { … });
+    ```
 
     ----------------------------------------------------------------------------
 *   **onMinChars** (minChars, $item) _function, null_
@@ -510,7 +554,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopolominchars_ event:
 
-        $(selector).on('marcopolominchars', function (event, minChars, $item) { … });
+    ```javascript
+    $(selector).on('marcopolominchars', function (event, minChars, $item) { … });
+    ```
 
     ----------------------------------------------------------------------------
 *   **onNoResults** (q, $item) _function, null_
@@ -528,7 +574,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopolonoresults_ event:
 
-        $(selector).on('marcopolonoresults', function (event, q, $item) { … });
+    ```javascript
+    $(selector).on('marcopolonoresults', function (event, q, $item) { … });
+    ```
 
     ----------------------------------------------------------------------------
 *   **onRequestBefore** () _function, null_
@@ -544,7 +592,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopolorequestbefore_ event:
 
-        $(selector).on('marcopolorequestbefore', function (event) { … });
+    ```javascript
+    $(selector).on('marcopolorequestbefore', function (event) { … });
+    ```
 
     ----------------------------------------------------------------------------
 *   **onRequestAfter** (jqXHR, textStatus) _function, null_
@@ -563,7 +613,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopolorequestafter_ event:
 
-        $(selector).on('marcopolorequestafter', function (event, jqXHR, textStatus) { … });
+    ```javascript
+    $(selector).on('marcopolorequestafter', function (event, jqXHR, textStatus) { … });
+    ```
 
     ----------------------------------------------------------------------------
 *   **onResults** (data) _function, null_
@@ -580,7 +632,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopoloresults_ event:
 
-        $(selector).on('marcopoloresults', function (event, data) { … });
+    ```javascript
+    $(selector).on('marcopoloresults', function (event, data) { … });
+    ```
 
     ----------------------------------------------------------------------------
 *   **onSelect** (data, $item, initial) _function, null_
@@ -592,7 +646,9 @@ be used).
 
     _Default:_
 
-        this.val(data.title || data.name);
+    ```javascript
+    this.val(data.title || data.name);
+    ```
 
     _Parameters:_
 
@@ -605,7 +661,9 @@ be used).
 
     _Event:_ You can also bind to the _marcopoloselect_ event:
 
-        $(selector).on('marcopoloselect', function (event, data, $item, initial) { … });
+    ```javascript
+    $(selector).on('marcopoloselect', function (event, data, $item, initial) { … });
+    ```
 
 Methods
 -------
@@ -618,7 +676,9 @@ Methods
 
     _Example:_
 
-        $('#userSearch').marcoPolo('change', 'Wilson');
+    ```javascript
+    $('#userSearch').marcoPolo('change', 'Wilson');
+    ```
 
     _Parameters:_
 
@@ -632,7 +692,9 @@ Methods
 
     _Example:_
 
-        $('#userSearch').marcoPolo('destroy');
+    ```javascript
+    $('#userSearch').marcoPolo('destroy');
+    ```
 
     ----------------------------------------------------------------------------
 *   **list**
@@ -641,7 +703,9 @@ Methods
 
     _Example:_
 
-        $('#userSearch').marcoPolo('list');
+    ```javascript
+    $('#userSearch').marcoPolo('list');
+    ```
 
     ----------------------------------------------------------------------------
 *   **option**
@@ -652,22 +716,30 @@ Methods
 
     Get a specific option:
 
-        $('#userSearch').marcoPolo('option', 'url');
+    ```javascript
+    $('#userSearch').marcoPolo('option', 'url');
+    ```
 
     Get the entire options object:
 
-        $('#userSearch').marcoPolo('option');
+    ```javascript
+    $('#userSearch').marcoPolo('option');
+    ```
 
     Set a specific option:
 
-        $('#userSearch').marcoPolo('option', 'url', '/new/url');
+    ```javascript
+    $('#userSearch').marcoPolo('option', 'url', '/new/url');
+    ```
 
     Set multiple options:
 
-        $('#userSearch').marcoPolo('option', {
-          url: '/new/url',
-          onSelect: function (data, $item) { … }
-        });
+    ```javascript
+    $('#userSearch').marcoPolo('option', {
+      url: '/new/url',
+      onSelect: function (data, $item) { … }
+    });
+    ```
 
     _Parameters:_
 
@@ -684,11 +756,15 @@ Methods
 
     Trigger a search on the existing input value:
 
-        $('#userSearch').marcoPolo('search');
+    ```javascript
+    $('#userSearch').marcoPolo('search');
+    ```
 
     Trigger a search on a new value:
 
-        $('#userSearch').marcoPolo('search', 'Wilson');
+    ```javascript
+    $('#userSearch').marcoPolo('search', 'Wilson');
+    ```
 
     _Parameters:_
 
@@ -702,7 +778,9 @@ Methods
 
     _Example:_
 
-        $('#userSearch').marcoPolo('select', { first_name: 'Lindsay', … });
+    ```javascript
+    $('#userSearch').marcoPolo('select', { first_name: 'Lindsay', … });
+    ```
 
     _Parameters:_
 
@@ -715,7 +793,9 @@ Methods
 
     _Example:_
 
-        $('#userSearch').marcoPolo('selected');
+    ```javascript
+    $('#userSearch').marcoPolo('selected');
+    ```
 
 Feedback
 --------

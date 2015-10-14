@@ -1,11 +1,11 @@
 /*!
- * Marco Polo v1.7.5
+ * Marco Polo v1.8.1
  *
  * A jQuery autocomplete plugin for the discerning developer.
  *
  * https://github.com/jstayton/jquery-marcopolo
  *
- * Copyright 2013 by Justin Stayton
+ * Copyright 2014 by Justin Stayton
  * Licensed MIT
  */
 (function (factory) {
@@ -317,7 +317,9 @@
         return;
       }
 
-      self.$input.val(q);
+      if (q !== self.$input.val()) {
+        self.$input.val(q);
+      }
 
       // Reset the currently selected data.
       self.selectedData = null;
@@ -526,9 +528,6 @@
 
             // Highlight the first item.
             case self.keys.HOME:
-              // The default scrolls the page to the top.
-              key.preventDefault();
-
               // Show the list if it has been hidden by ESC.
               self
                 ._showList()
@@ -538,9 +537,6 @@
 
             // Highlight the last item.
             case self.keys.END:
-              // The default scrolls the page to the bottom.
-              key.preventDefault();
-
               // Show the list if it has been hidden by ESC.
               self
                 ._showList()
@@ -956,7 +952,7 @@
         data = options.formatData.call($input, data);
       }
 
-      if ($.isEmptyObject(data)) {
+      if (!data || data.length === 0 || $.isEmptyObject(data)) {
         self._buildNoResultsList(q);
       }
       else {
@@ -1077,7 +1073,8 @@
       // Requests are buffered the number of ms specified by the 'delay'
       // setting. This helps prevent an ajax request for every keystroke.
       self.timer = setTimeout(function () {
-        var param = {},
+        var data = {},
+            param = {},
             params = {},
             cacheKey,
             $inputParent = $();
@@ -1089,10 +1086,14 @@
           return self;
         }
 
-        // Add the query to the additional data to be sent with the request.
+        // Get the additional data to send with the request.
+        data = $.isFunction(options.data) ? options.data.call(self.$input, q) : options.data;
+
+        // Add the query to be sent with the request.
         param[options.param] = q;
 
-        params = $.extend({}, options.data, param);
+        // Merge all parameters together.
+        params = $.extend({}, data, param);
 
         // Build the request URL with query string data to use as the cache
         // key.
